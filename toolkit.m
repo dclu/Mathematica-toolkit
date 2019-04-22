@@ -10,7 +10,7 @@ Msig::usage="Judge whether the matrix is zero.";
 \[Sigma]Rot::usage="Gives rotation matrix exp[\[ImaginaryI]\[Theta]/2 \[Sigma]]"
 \[Sigma]R4::usage="exp[\[ImaginaryI]\[Pi]/4 \[Sigma]]"
 \[Sigma]find::usage="Convert the matrix form to \!\(\*SuperscriptBox[\(\[Sigma]\), \(ijk ... \)]\)"
-
+(*
 ExpandNCM::usage="[NCMpoly], Expand NonCommutativeMultiplication"
 AppToNCM::usage="[NCM,g,f]Acts on NCM polynomial, g acts on coefficients, f acts on NCM"
 takeDag::usage="[NCM] take dagger... g=conjugate, f=reverse"
@@ -18,6 +18,7 @@ takeDag::usage="[NCM] take dagger... g=conjugate, f=reverse"
 NCMAntiCommutator::usage="[a,b]Gives Anti-Commutator of NCM"
 NCMCommutator::usage="[a,b]Gives Commutator of NCM"
 sendNCM::usage="[NCM mononial]"
+*)
 (*
 NOrderB::usage="[NCM] gives boson normal ordering, a[d,...] a[o,...] reps creation/annihilation"
 NOrderF::usage="[NCM] gives fermion normal ordering, c[d,...] c[o,...] reps creation/annihilation"
@@ -30,7 +31,7 @@ norderF::usage="boson normal ordering"
 Begin["`Private`"];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Pauli Algebra*)
 
 
@@ -58,7 +59,7 @@ If[qub\[Element]Integers,
 tup=Tuples[Range[0,3],qub];
 \[Sigma]table=\[Sigma]s@@@tup;
 \[Sigma]table=(ArrayReshape[#,{2^qub 2^qub,1}]&/@\[Sigma]table);
-Total[1/2^qub Flatten@Table[Total[(ConjugateTranspose@ArrayReshape[m,{4^qub,1}].\[Sigma]table[[i]])]Superscript[\[Sigma],tup[[i]]],{i,Length@\[Sigma]table}]]
+Total[1/2^qub Flatten@Table[Total[(ConjugateTranspose@ArrayReshape[m,{4^qub,1}].\[Sigma]table[[i]])]Superscript["\[Sigma]",tup[[i]]],{i,Length@\[Sigma]table}]]
 ]
 ]
 
@@ -67,6 +68,7 @@ Total[1/2^qub Flatten@Table[Total[(ConjugateTranspose@ArrayReshape[m,{4^qub,1}].
 (*Non-commutative algebra*)
 
 
+(*
 ClearAll[ExpandNCM,sendNCM,AppToNCM,takeDag,NCMAntiCommutator,NCMCommutator]
 (*a[__] to represent fermion/boson operator, d/o represent dagger or not*)
 ExpandNCM[(h:NonCommutativeMultiply)[a___,b_Plus,c___]]:=Distribute[h[a,b,c],Plus,h,Plus,ExpandNCM[h[##]]&]
@@ -81,6 +83,7 @@ takeDag[exp_]:=AppToNCM[exp,Conjugate,Reverse]/.{d->o,o->d}
 
 NCMAntiCommutator[a_,b_]:=a**b+b**a
 NCMCommutator[a_,b_]:=a**b-b**a
+*)
 
 
 (* ::Section:: *)
