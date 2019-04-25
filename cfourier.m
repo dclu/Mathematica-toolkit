@@ -32,8 +32,9 @@ AppToNCM[exp_,g_,f_]:=Distribute[sendNCM[ExpandNCM[exp],g,f]]
 takeDag[exp_]:=AppToNCM[exp,Conjugate,Reverse]/.{d->o,o->d}
 
 
-Clear[cfourier,cfourier1c,cfouriernc,cfourierExpand,generateKlist]
 generateKlist[n_,l_]:=Block[{kk={kx,ky,kz,kw}},Array[ToExpression[ToString[kk[[#2]]]<>ToString[#1]]&,{n,l}]]
+
+Begin["cfourierPrivate`"];
 cfourier1c[c[o,i:{__},\[Alpha]___],k:{__}]:={c[o,k,\[Alpha]],E^(I k.i)}
 cfourier1c[c[d,i:{__},\[Alpha]___],k:{__}]:={c[d,k,\[Alpha]],E^(-I k.i)}
 cfouriernc[bbb_,dim_]:=Block[{exp},
@@ -44,9 +45,11 @@ cfouriernc[bbb__,dim_]:=Block[{exp},
 exp=Thread@MapThread[cfourier1c,{{bbb},generateKlist[Length@{bbb},dim]}];
 (Times@@exp[[2]])NonCommutativeMultiply@@exp[[1]]
 ]
+End[];
+
 cfourier[exp_,dim_]:=Block[{exp1},
 exp1=AppToNCM[exp,Identity,fsfjksahdfj[#,dim]&]/.NonCommutativeMultiply[ss__]:>ss;
-exp1/.fsfjksahdfj-> cfouriernc
+exp1/.fsfjksahdfj-> cfourierPrivate`cfouriernc
 ]
 
 
@@ -64,7 +67,7 @@ exponentExpand[a_,i_]:=a
 
 cfourierExpand[exp_,i_]:=AppToNCM[exp,exponentExpand[#,i]&,Identity]
 
-ClearAll[cSumss,cSum]
+Begin["cfourierPrivateS`"];
 cSumss[(h:Power)[a_,b_],i:{___}]:=Block[{ilist},
 ilist=CoefficientList[b,i];
 If[Length@ilist<2,"No "<>ToString[i],
@@ -75,8 +78,10 @@ If[Length@i==3,a^ilist[[1,1,1]] Times@@(\[Delta]/@{ilist[[2,1,1]],ilist[[1,2,1]]
 ]
 cSumss[(h:Times)[a___],i:{__}]:=h@@(cSumss[#,i]&/@{a})
 cSumss[a_,i_]:=a
+End[];
 
-cSum[exp_,i_]:=AppToNCM[exp,cSumss[#,i]&,Identity]
+cSum[exp_,i_]:=AppToNCM[exp,cfourierPrivateS`cSumss[#,i]&,Identity]
+
 \[Delta][0]:=1;
 
 
