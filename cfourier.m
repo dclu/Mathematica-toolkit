@@ -12,6 +12,7 @@ cSum::usage="Sum over {i,j,...}.";
 
 
 
+Clear[sendNCM,expandNCM]
 (*a[__] to represent fermion/boson operator, d/o represent dagger or not*)
 expandNCM[(h:NonCommutativeMultiply)[a___,b_Plus,c___]]:=Distribute[h[a,b,c],Plus,h,Plus,expandNCM[h[##]]&]
 expandNCM[(h:NonCommutativeMultiply)[a___,b_Times,c___]]:=Most[b]expandNCM[h[a,Last[b],c]]
@@ -27,6 +28,8 @@ sendNCM[(h:Times)[a___,c[k___]],g_,f_]:=g[Times[a]]f[c[k]]
 sendNCM[c[k___],g_,f_]:=f[c[k]]
 sendNCM[(h:Times)[tt___,a[k___]],g_,f_]:=g[Times[tt]]f[a[k]]
 sendNCM[a[k___],g_,f_]:=f[a[k]]
+sendNCM[ff_Function,g_,f_]:=f[ff]
+sendNCM[(h:Times)[tt___,ff_Function],g_,f_]:=g[Times[tt]]f[ff]
 
 AppToNCM[exp_,g_,f_]:=Distribute[sendNCM[ExpandNCM[exp],g,f]]
 takeDag[exp_]:=AppToNCM[exp,Conjugate,Reverse]/.{d->o,o->d}
@@ -86,4 +89,6 @@ cSum[exp_,i_]:=AppToNCM[exp,cfourierPrivateS`cSumss[#,i]&,Identity]
 
 
 
-
+`privite`AppOperatorsABC[p_Function,f_]:=p@f
+`privite`AppOperatorsABC[p_NonCommutativeMultiply,f_]:=Composition[p/.NonCommutativeMultiply->Sequence][f]
+AppOperators[exp_,f_]:=AppToNCM[exp,Identity,`privite`AppOperatorsABC[#,f]&]
