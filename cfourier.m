@@ -90,5 +90,5 @@ cSum[exp_,i_]:=AppToNCM[exp,cfourierPrivateS`cSumss[#,i]&,Identity]
 
 
 `privite`AppOperatorsABC[p_Function,f_]:=p@f
-`privite`AppOperatorsABC[p_NonCommutativeMultiply,f_]:=Composition[p/.NonCommutativeMultiply->Sequence][f]
-AppOperators[exp_,f_]:=AppToNCM[exp,Identity,`privite`AppOperatorsABC[#,f]&]
+`privite`AppOperatorsABC[p_NonCommutativeMultiply,f_]:=Simplify@Composition[p/.NonCommutativeMultiply->Sequence][f]
+AppOperators[exp_,f_]:=Simplify@AppToNCM[exp,Identity,`privite`AppOperatorsABC[#,f]&]
