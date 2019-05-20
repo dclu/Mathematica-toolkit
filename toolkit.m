@@ -35,11 +35,11 @@ Begin["`Private`"];
 (*Pauli Algebra*)
 
 
-Commutator[a:{{__},{__}},b:{{__},{__}}]:=a.b-b.a;
-AntiCommutator[a:{{__},{__}},b:{{__},{__}}]:=a.b+b.a;
+Commutator[a:{__List},b:{__List}]:=a.b-b.a;
+AntiCommutator[a:{__List},b:{__List}]:=a.b+b.a;
 Commutator[a_SparseArray,b_SparseArray]:=a.b-b.a;
 AntiCommutator[a_SparseArray,b_SparseArray]:=a.b+b.a;
-Msig[a:{{__},{__}}]:=TrueQ[Total[Abs@Flatten@a]<10^-16];
+Msig[a:{__List}]:=TrueQ[Total[Abs@Flatten@a]<10^-16];
 Msig[a_SparseArray]:=TrueQ[Total[Abs@Flatten@a]<10^-16];
 
 
