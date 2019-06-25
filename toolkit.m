@@ -52,16 +52,15 @@ Msig[a_SparseArray]:=TrueQ[Total[Abs@Flatten@a]<10^-16];
 
 
 qubit[m_]:=Log[2,Length[m]]
-\[Sigma]find[m_]:=Block[{qub,\[Sigma]table,tup},
+Options[\[Sigma]find]={"condition"->{}};
+\[Sigma]find[m_,OptionsPattern[]]:=Block[{qub,\[Sigma]table,tup},
 qub=qubit[m];
 If[qub\[Element]Integers,
 
 tup=Tuples[Range[0,3],qub];
 \[Sigma]table=\[Sigma]s@@@tup;
 \[Sigma]table=(ArrayReshape[#,{2^qub 2^qub,1}]&/@\[Sigma]table);
-Total[1/2^qub Flatten@Table[Total[(ConjugateTranspose@ArrayReshape[m,{4^qub,1}].\[Sigma]table[[i]])]Superscript["\[Sigma]",tup[[i]]],{i,Length@\[Sigma]table}]]
-]
-]
+Total[1/2^qub Flatten@Table[Total[(Simplify[ConjugateTranspose[ArrayReshape[m,{4^qub,1}]],Assumptions->OptionValue["condition"]].\[Sigma]table[[i]])]Superscript["\[Sigma]",tup[[i]]],{i,Length@\[Sigma]table}]]]]
 
 
 (* ::Section:: *)
