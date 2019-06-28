@@ -1,15 +1,15 @@
 (* ::Package:: *)
 
-BeginPackage["toolkit`"]
+BeginPackage["toolkit`"];
 Commutator::usage="Gives the commutator of matricies.";
 AntiCommutator::usage="Gives the anti-commutator of matricies.";
 Msig::usage="Judge whether the matrix is zero.";
 
 (*Pauli Matrix *)
-\[Sigma]s::usage="Gives Pauli string \!\(\*SuperscriptBox[\(\[Sigma]\), \(ijk ... \)]\)"
-\[Sigma]Rot::usage="Gives rotation matrix exp[\[ImaginaryI]\[Theta]/2 \[Sigma]]"
-\[Sigma]R4::usage="exp[\[ImaginaryI]\[Pi]/4 \[Sigma]]"
-\[Sigma]find::usage="Convert the matrix form to \!\(\*SuperscriptBox[\(\[Sigma]\), \(ijk ... \)]\)"
+\[Sigma]s::usage="Gives Pauli string \!\(\*SuperscriptBox[\(\[Sigma]\), \(ijk ... \)]\)";
+\[Sigma]Rot::usage="Gives rotation matrix exp[\[ImaginaryI]\[Theta]/2 \[Sigma]]";
+\[Sigma]R4::usage="exp[\[ImaginaryI]\[Pi]/4 \[Sigma]]";
+\[Sigma]find::usage="Convert the matrix form to \!\(\*SuperscriptBox[\(\[Sigma]\), \(ijk ... \)]\)";
 (*
 ExpandNCM::usage="[NCMpoly], Expand NonCommutativeMultiplication"
 AppToNCM::usage="[NCM,g,f]Acts on NCM polynomial, g acts on coefficients, f acts on NCM"
@@ -26,8 +26,10 @@ WickCon::usage="[exp,NOrderB/F] wick contraction"
 norderB::usage="boson normal ordering"
 norderF::usage="boson normal ordering"
 *)
-AppToCT::usage="Apply function f to CircleTimes, g to coefficients"
-PauliEva::usage="Evaluate \[Sigma][]"
+AppToCT::usage="Apply function f to CircleTimes, g to coefficients";
+PauliEva::usage="Evaluate \[Sigma][]";
+EvaPauli::usage="Evaluate \[Sigma][] in c* form, do not use!";
+\[Sigma]::usage="represent Pauli";
 
 
 Begin["`Private`"];
@@ -69,7 +71,6 @@ Total[1/2^qub Flatten@Table[Total[(Simplify[ConjugateTranspose[ArrayReshape[m,{4
 (*symbolic*)
 
 
-Clear[sendCT,expandCT]
 (*a[__] to represent fermion/boson operator, d/o represent dagger or not*)
 expandCT[(h:CircleTimes)[a___,b_Plus,c___]]:=Distribute[h[a,b,c],Plus,h,Plus,expandCT[h[##]]&]
 expandCT[(h:CircleTimes)[a___,b_Times,c___]]:=Most[b]expandCT[h[a,Last[b],c]]
@@ -93,7 +94,6 @@ sendNCM[(h:Times)[tt___,ff_Function],g_,f_]:=g[Times[tt]]f[ff]*)
 AppToCT[exp_,g_,f_]:=Distribute[sendCT[ExpandCT[exp],g,f]]
 
 
-Clear[EvaPauli,IndexProduct,PauliEva]
 IndexProduct[0,i_]:=i;
 IndexProduct[i_,0]:=i;
 IndexProduct[i_,i_]:=0;
@@ -104,8 +104,9 @@ IndexProduct[2,1]:=(Sow[-I];3);
 IndexProduct[3,2]:=(Sow[-I];1);
 IndexProduct[1,3]:=(Sow[-I];2);
 IndexProduct[i_,j_,k__]:=IndexProduct[IndexProduct[i,j],k]
-EvaPauli[(h:CircleTimes)[As:_\[Sigma]..]]:=Times@@Flatten@Reap[IndexProduct@@@Thread[{As},\[Sigma]]]
+EvaPauli[(h:CircleTimes)[As: _\[Sigma]..]]:=Times@@Flatten@Reap[IndexProduct@@@Thread[{As},\[Sigma]]]
 EvaPauli[(h:CircleTimes)[___,0,___]]:=0
+
 PauliEva[exp_]:=AppToCT[exp,Identity,EvaPauli]
 
 
