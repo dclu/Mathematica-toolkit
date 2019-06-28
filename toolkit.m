@@ -30,6 +30,8 @@ AppToCT::usage="Apply function f to CircleTimes, g to coefficients";
 PauliEva::usage="Evaluate \[Sigma][]";
 EvaPauli::usage="Evaluate \[Sigma][] in c* form, do not use!";
 \[Sigma]::usage="represent Pauli";
+sendCT::usage="Distribute function to c*";
+ExpandCT::usage="Expand c* poly";
 
 
 Begin["`Private`"];
@@ -104,7 +106,7 @@ IndexProduct[2,1]:=(Sow[-I];3);
 IndexProduct[3,2]:=(Sow[-I];1);
 IndexProduct[1,3]:=(Sow[-I];2);
 IndexProduct[i_,j_,k__]:=IndexProduct[IndexProduct[i,j],k]
-EvaPauli[(h:CircleTimes)[As: _\[Sigma]..]]:=Times@@Flatten@Reap[IndexProduct@@@Thread[{As},\[Sigma]]]
+EvaPauli[(h:CircleTimes)[As: _ \[Sigma]..]]:=Times@@Flatten@Reap[IndexProduct@@@Thread[{As},\[Sigma]]]
 EvaPauli[(h:CircleTimes)[___,0,___]]:=0
 
 PauliEva[exp_]:=AppToCT[exp,Identity,EvaPauli]
