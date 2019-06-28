@@ -106,7 +106,7 @@ IndexProduct[2,1]:=(Sow[-I];3);
 IndexProduct[3,2]:=(Sow[-I];1);
 IndexProduct[1,3]:=(Sow[-I];2);
 IndexProduct[i_,j_,k__]:=IndexProduct[IndexProduct[i,j],k]
-EvaPauli[(h:CircleTimes)[As: _ \[Sigma]..]]:=Times@@Flatten@Reap[IndexProduct@@@Thread[{As},\[Sigma]]]
+EvaPauli[(h:CircleTimes)[As: _\[Sigma]..]]:=Times@@Flatten@Reap[IndexProduct@@@Thread[{As},\[Sigma]]]
 EvaPauli[(h:CircleTimes)[___,0,___]]:=0
 
 PauliEva[exp_]:=AppToCT[exp,Identity,EvaPauli]
