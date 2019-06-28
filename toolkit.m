@@ -26,6 +26,8 @@ WickCon::usage="[exp,NOrderB/F] wick contraction"
 norderB::usage="boson normal ordering"
 norderF::usage="boson normal ordering"
 *)
+AppToCT::usage="Apply function f to CircleTimes, g to coefficients"
+PauliEva::usage="Evaluate \[Sigma][]"
 
 
 Begin["`Private`"];
@@ -64,7 +66,51 @@ Total[1/2^qub Flatten@Table[Total[(ConjugateTranspose@ArrayReshape[m,{4^qub,1}].
 ]
 
 
-(* ::Section:: *)
+(* ::Subsection:: *)
+(*symbolic*)
+
+
+Clear[sendCT,expandCT]
+(*a[__] to represent fermion/boson operator, d/o represent dagger or not*)
+expandCT[(h:CircleTimes)[a___,b_Plus,c___]]:=Distribute[h[a,b,c],Plus,h,Plus,expandCT[h[##]]&]
+expandCT[(h:CircleTimes)[a___,b_Times,c___]]:=Most[b]expandCT[h[a,Last[b],c]]
+expandCT[a_]:=ExpandAll[a]
+ExpandCT[exp_]:=Block[{exp1},
+exp1=expandCT[exp];
+Distribute[fggsfsf[exp1]]/.fggsfsf->expandCT
+]
+(*g acts on coefficients, f acts on NonCM*)
+sendCT[(h:Times)[a___,b_CircleTimes],g_,f_]:=g[Times[a]]f[b]
+sendCT[(h:Times)[a___,b_CircleTimes,c__],g_,f_]:=g[Times[a,c]]f[b]
+sendCT[b_CircleTimes,g_,f_]:=f[b]
+sendCT[(h:Times)[a___,\[Sigma][k___]],g_,f_]:=g[Times[a]]f[\[Sigma][k]]
+sendCT[\[Sigma][k___],g_,f_]:=f[\[Sigma][k]]
+sendCT[a_?NumberQ,g_,f_]:=g[a]
+(*sendNCM[(h:Times)[tt___,a[k___]],g_,f_]:=g[Times[tt]]f[a[k]]
+sendNCM[a[k___],g_,f_]:=f[a[k]]
+sendNCM[ff_Function,g_,f_]:=f[ff]
+sendNCM[(h:Times)[tt___,ff_Function],g_,f_]:=g[Times[tt]]f[ff]*)
+
+AppToCT[exp_,g_,f_]:=Distribute[sendCT[ExpandCT[exp],g,f]]
+
+
+Clear[EvaPauli,IndexProduct,PauliEva]
+IndexProduct[0,i_]:=i;
+IndexProduct[i_,0]:=i;
+IndexProduct[i_,i_]:=0;
+IndexProduct[1,2]:=(Sow[I];3);
+IndexProduct[2,3]:=(Sow[I];1);
+IndexProduct[3,1]:=(Sow[I];2);
+IndexProduct[2,1]:=(Sow[-I];3);
+IndexProduct[3,2]:=(Sow[-I];1);
+IndexProduct[1,3]:=(Sow[-I];2);
+IndexProduct[i_,j_,k__]:=IndexProduct[IndexProduct[i,j],k]
+EvaPauli[(h:CircleTimes)[As:_\[Sigma]..]]:=Times@@Flatten@Reap[IndexProduct@@@Thread[{As},\[Sigma]]]
+EvaPauli[(h:CircleTimes)[___,0,___]]:=0
+PauliEva[exp_]:=AppToCT[exp,Identity,EvaPauli]
+
+
+(* ::Section::Closed:: *)
 (*Non-commutative algebra*)
 
 
