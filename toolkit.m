@@ -26,6 +26,7 @@ WickCon::usage="[exp,NOrderB/F] wick contraction"
 norderB::usage="boson normal ordering"
 norderF::usage="boson normal ordering"
 *)
+tTr::usage="tTr[{T1,T2,...},{{i1,j1},{i2,j2},...}] perform the tensor trace over a tensor network consist of tensors T1,T2,... by contracting pairs of legs specified by {i1,j2},{i2,j2}....\ntTr[Ts,ijs,{k1,k2,...}] after tensor trace, the dangling legs k1,k2,... should be arranged in the resulting tensor according to the order given in the list.\ntTr[Ts,ijs,{{k1,k2},{k3},{},...}] the dangling legs should be group together in the new tensor according to the pattern specified in the list (an empty leg can be represented by {}). ";
 AppToCT::usage="Apply function f to CircleTimes, g to coefficients";
 PauliEva::usage="Evaluate \[Sigma][]";
 EvaPauli::usage="Evaluate \[Sigma][] in c* form, do not use!";
@@ -35,6 +36,16 @@ ExpandCT::usage="Expand c* poly";
 
 
 Begin["`Private`"];
+
+
+(* ::Section:: *)
+(*TensorTrace*)
+
+
+tTr[Ts_,s_:{}]:=Activate@TensorContract[Inactive[TensorProduct]@@Ts,s];
+tTr[Ts_,s_:{},{}]:=tTr[Ts,s];
+tTr[Ts_,s_:{},ex:{_Integer..}]:=Activate@Transpose[TensorContract[Inactive[TensorProduct]@@Ts,s],Ordering@ex];
+tTr[Ts_,s_:{},ex:{_List..}]:=Module[{ten,dim,shape},ten=tTr[Ts,s,Flatten@ex];dim=Dimensions[ten];shape=Times@@Take[dim,#]&/@MapThread[{#1+1,#2}&,Through@{Most,Rest}@Prepend[Accumulate[Length/@ex],0]];ArrayReshape[ten,shape]]
 
 
 (* ::Section:: *)
@@ -106,7 +117,7 @@ IndexProduct[2,1]:=(Sow[-I];3);
 IndexProduct[3,2]:=(Sow[-I];1);
 IndexProduct[1,3]:=(Sow[-I];2);
 IndexProduct[i_,j_,k__]:=IndexProduct[IndexProduct[i,j],k]
-EvaPauli[(h:CircleTimes)[As: _\[Sigma]..]]:=Times@@Flatten@Reap[IndexProduct@@@Thread[{As},\[Sigma]]]
+EvaPauli[(h:CircleTimes)[As: _ \[Sigma]..]]:=Times@@Flatten@Reap[IndexProduct@@@Thread[{As},\[Sigma]]]
 EvaPauli[(h:CircleTimes)[___,0,___]]:=0
 
 PauliEva[exp_]:=AppToCT[exp,Identity,EvaPauli]
